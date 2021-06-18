@@ -79,11 +79,11 @@
 
 					<div class="w-full text-center p-t-55">
 						<span class="txt2">
-							Not a member?
+							Quieres cerrar?
 						</span>
 
-						<a href="#" class="txt2 bo1">
-							Sign up now
+						<a href="#" onclick="signOut();" class="txt2 bo1">
+							Cerrar Sesion ahora.
 						</a>
 					</div>
 				</form>
@@ -98,12 +98,28 @@
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script>
 
+		var url = ( window.location.hostname.includes('localhost') )
+					? 'http://localhost:8080/api/auth/google'
+					: 'https://kevinrestserverdanae.herokuapp.com/api/auth/google';
+
         function onSignIn(googleUser) {
             var profile = googleUser.getBasicProfile();
             console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
             console.log('Name: ' + profile.getName());
             console.log('Image URL: ' + profile.getImageUrl());
             console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+
+			var id_token = googleUser.getAuthResponse().id_token;
+			const data = { id_token }
+
+			fetch( url, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify( data )
+			})
+			.then( resp => resp.json() )
+			.then( data => console.log( 'Nuestro server', data ))
+			.catch( console.log );
         }
 
         function signOut() {
